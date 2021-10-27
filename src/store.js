@@ -3,6 +3,7 @@ import {
   commonReducer,
   productReducer,
   userReducer,
+  taskReducer,
 } from './redux/reducers'
 
 export const store = configureStore({
@@ -10,5 +11,6 @@ export const store = configureStore({
     commonReducer,
     productReducer,
     userReducer,
+    taskReducer
   },
 })

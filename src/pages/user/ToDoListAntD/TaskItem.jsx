@@ -3,7 +3,7 @@ import { Card, Button, Row, Form, Input } from "antd";
 
 const TaskItem = ({
   data,
-  index,
+  id,
   handleEditTask,
   handleDeleteTask,
 }) => {
@@ -23,14 +23,17 @@ const TaskItem = ({
     return (
       <Form
         form={editForm}
-        name={`editTask-${index}`}
+        name={`editTask-${id}`}
         labelCol={{ span: 4 }}
         wrapperCol={{ span: 20 }}
         initialValues={{
           title: data.title,
           description: data.description,
         }}
-        onFinish={(values) => handleEditTask(index, values)}
+        onFinish={(values) => {
+          handleEditTask(id, values)
+          setIsEdit(false)
+        }}
       >
         <Form.Item
           label="Tiêu đề"
@@ -75,7 +78,6 @@ const TaskItem = ({
                   style={{ marginRight: 8 }}
                   onClick={() => {
                     editForm.submit()
-                    setIsEdit(false)
                   }}
                 >
                   Xác nhận
@@ -101,7 +103,7 @@ const TaskItem = ({
               </Button>
             )
           }
-          <Button danger onClick={() => handleDeleteTask(index)}>
+          <Button danger onClick={() => handleDeleteTask(id)}>
             Xóa
           </Button>
         </Row>

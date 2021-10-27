@@ -1,39 +1,57 @@
 import React, { useState, useMemo } from "react";
 import { Form, Button, Input, Card } from "antd";
+import { useDispatch, useSelector } from "react-redux";
+import { SearchOutlined } from "@ant-design/icons";
+import { v4 as uuidv4 } from "uuid";
+
 import TaskItem from "./TaskItem";
 
+import {
+  addTaskAction,
+  editTaskAction,
+  deleteTaskAction,
+} from "../../../redux/actions";
+
 const ToDoListPage = () => {
-  const [taskList, setTaskList] = useState([]);
+  const [searchKeyword, setSearchKeyword] = useState("");
+
+  const dispatch = useDispatch();
+  const { taskList } = useSelector((state) => state.taskReducer);
+
+  const filterTaskList = taskList.filter((task) => {
+    return task.title.toLowerCase().includes(searchKeyword.toLowerCase());
+  });
 
   const handleAddTask = (values) => {
-    setTaskList([values, ...taskList]);
+    dispatch(addTaskAction({
+      data: {
+        id: uuidv4(),
+        ...values,
+      }
+    }));
   };
 
-  const handleEditTask = (index, values) => {
-    const newTaskList = [...taskList]
-    newTaskList.splice(index, 1, values)
-    setTaskList(newTaskList)
+  const handleEditTask = (id, values) => {
+    dispatch(editTaskAction({ id, data: values }));
   };
 
-  const handleDeleteTask = (index) => {
-    const newTaskList = [...taskList]
-    newTaskList.splice(index, 1)
-    setTaskList(newTaskList)
+  const handleDeleteTask = (id) => {
+    dispatch(deleteTaskAction({ id }));
   };
 
   const renderTaskItem = useMemo(() => {
-    return taskList.map((taskItem, taskIndex) => {
+    return filterTaskList.map((taskItem, taskIndex) => {
       return (
         <TaskItem
           key={taskIndex}
           data={taskItem}
-          index={taskIndex}
+          id={taskItem.id}
           handleEditTask={handleEditTask}
           handleDeleteTask={handleDeleteTask}
         />
       );
     });
-  }, [taskList]);
+  }, [filterTaskList]);
 
   return (
     <div>
@@ -78,6 +96,12 @@ const ToDoListPage = () => {
           </Button>
         </Form>
       </Card>
+      <Input
+        onChange={(e) => setSearchKeyword(e.target.value)}
+        placeholder="Tìm kiếm"
+        suffix={<SearchOutlined />}
+        style={{ marginTop: 16 }}
+      />
       {renderTaskItem}
     </div>
   );
